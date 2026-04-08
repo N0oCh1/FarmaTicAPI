@@ -1,14 +1,6 @@
-import { Sequelize } from "sequelize";
+import postgres from 'postgres'
 
-const sequelize = new Sequelize(
-  process.env.DBNAME ?? "" as string,
-  process.env.DBUSER ?? "" as string,
-  process.env.DBPASSWORD ?? "" as string,
-  {
-    host: process.env.DBHOST || "",
-    dialect: "postgres",
-    logging: false,
-  }
-);
+const connectionString = process.env.DB_URL || ""
+const sql = postgres(connectionString)
 
-export default sequelize;
+export default sql

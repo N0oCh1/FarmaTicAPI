@@ -1,11 +1,11 @@
-import Cliente from "./Cliente";
-import Usuario from "./Usuario";
-import FichaMedica from "./FichaMedica";
-import HistorialMedico from "./HistorialMedico";
-import Receta from "./Receta";
-import Dosis from "./Dosis";
-import Inventario from "./Inventario";
-import Maquina from "./Maquina";
+import Cliente from "./Cliente.js";
+import Usuario from "./Usuario.js";
+import FichaMedica from "./FichaMedica.js";
+import HistorialMedico from "./HistorialMedico.js";
+import Receta from "./Receta.js";
+import Dosis from "./Dosis.js";
+import Inventario from "./Inventario.js";
+import Maquina from "./Maquina.js";
 
 /* Relaciones */
 
