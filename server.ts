@@ -1,9 +1,7 @@
-'use strict';
+import dotenv from "dotenv";
+import app from "./src/app";
 
-require('dotenv').config();
-
-const app = require('./app');
-
+dotenv.config();
 const PORT = process.env.PORT || 3000;
 
 const server = app.listen(PORT, () => {
@@ -11,7 +9,7 @@ const server = app.listen(PORT, () => {
 });
 
 // Graceful shutdown
-const shutdown = (signal) => {
+const shutdown = (signal: string) => {
   console.log(`\nReceived ${signal}. Closing HTTP server…`);
   server.close(() => {
     console.log('HTTP server closed.');
@@ -22,4 +20,4 @@ const shutdown = (signal) => {
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 process.on('SIGINT', () => shutdown('SIGINT'));
 
-module.exports = server;
+export default server;

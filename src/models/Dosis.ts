@@ -1,0 +1,22 @@
+import { DataTypes, Model } from "sequelize";
+import sequelize from "@/config/database";
+
+class Dosis extends Model {}
+
+Dosis.init(
+  {
+    id: {
+      type: DataTypes.BIGINT,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    id_medicamento: DataTypes.BIGINT,
+    cantidad: DataTypes.INTEGER,
+    instrucciones: DataTypes.TEXT,
+  },
+  {
+    sequelize,
+    modelName: "Dosis",
+  },
+);
+export default Dosis;

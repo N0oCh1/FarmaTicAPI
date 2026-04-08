@@ -1,11 +1,11 @@
-const Cliente = require("./Cliente");
-const Usuario = require("./Usuario");
-const FichaMedica = require("./FichaMedica");
-const HistorialMedico = require("./HistorialMedico");
-const Receta = require("./Receta");
-const Dosis = require("./Dosis");
-const Inventario = require("./Inventario");
-const Maquina = require("./Maquina");
+import Cliente from "./Cliente";
+import Usuario from "./Usuario";
+import FichaMedica from "./FichaMedica";
+import HistorialMedico from "./HistorialMedico";
+import Receta from "./Receta";
+import Dosis from "./Dosis";
+import Inventario from "./Inventario";
+import Maquina from "./Maquina";
 
 /* Relaciones */
 
@@ -24,7 +24,7 @@ Dosis.belongsTo(Receta);
 Maquina.hasMany(Inventario, { foreignKey: "id_maquina" });
 Inventario.belongsTo(Maquina);
 
-module.exports = {
+export {
   Cliente,
   Usuario,
   FichaMedica,

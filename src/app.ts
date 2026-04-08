@@ -1,7 +1,6 @@
-const express = require("express");
-const sequelize = require("./config/database");
-
-require("./models");
+import express from "express";
+import sequelize from "@/config/database";
+import "@/models"
 
 const app = express();
 
@@ -11,4 +10,4 @@ sequelize.sync({ alter: true }).then(() => {
   console.log("Base de datos sincronizada");
 });
 
-module.exports = app;
+export default app;
