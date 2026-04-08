@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import app from "./src/app";
+import app from "./app.js";
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -19,5 +19,16 @@ const shutdown = (signal: string) => {
 
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 process.on('SIGINT', () => shutdown('SIGINT'));
+
+// Error handling
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  process.exit(1);
+});
 
 export default server;
