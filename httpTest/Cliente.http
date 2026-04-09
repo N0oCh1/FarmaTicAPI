@@ -1,0 +1,15 @@
+# GET http://localhost:3000/clientes/; 
+
+POST http://localhost:3000/api/v0/clientes
+Content-Type: application/json
+
+{
+	"nombre": "Juan",
+	"apellido": "Perez",
+	"cedula": "1234567890",
+	"password": "secreto123",
+	"correo": "juan.perez@example.com",
+	"asegurado": false,
+	"verificado": false,
+	"sexo": "M"
+}
