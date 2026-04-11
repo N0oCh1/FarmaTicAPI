@@ -38,6 +38,10 @@ Cliente.init(
     sexo: {
       type: DataTypes.STRING(10),
     },
+    activo: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+    }
   },
   {
     sequelize,

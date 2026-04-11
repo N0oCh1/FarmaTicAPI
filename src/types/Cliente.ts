@@ -13,8 +13,7 @@ export interface ClienteAttributes {
 }
 
 export interface ClienteCreationAttributes {
-  id?: number;
-  nombre: string;
+  nombre?: string;
   apellido?: string | null;
   cedula?: string | null;
   password?: string | null;
@@ -26,4 +25,4 @@ export interface ClienteCreationAttributes {
   updatedAt?: Date;
 }
 
-export type ClienteUpdateAttributes = Partial<Omit<ClienteAttributes, "id">>;
+

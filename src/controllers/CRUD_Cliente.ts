@@ -17,7 +17,7 @@ async function CREATE(request: Request, response: Response) {
     }
 
     const res = await sql`INSERT INTO clientes ${sql(body)} RETURNING *`;
-    response.status(201).json(res[0]);
+    response.status(201).json({messages: "Cliente creado exitosamente", cliente: res[0]?.id});
   } catch (e: any) {
     console.error('Error al crear cliente:', e);
     response.status(500).json({
@@ -29,8 +29,8 @@ async function CREATE(request: Request, response: Response) {
 
 async function READ(request: Request, response: Response) {
   try {
-    const id = request.params.id;
-    if (id) {
+    const id = request.params.id || null;
+    if (id && id!=="all") {
       const res = await sql`SELECT * FROM clientes WHERE id = ${id}`;
       response.status(200).json(res);
     } else {
@@ -43,4 +43,36 @@ async function READ(request: Request, response: Response) {
       .json({ error: 'Error al obtener los clientes', details: e.message });
   }
 }
-export { CREATE, READ };
+
+async function UPDATE(request: Request, response: Response) {
+  try {
+    const id = request.params.id;
+    if (!id) {
+      return response.status(400).json({ error: 'El id del cliente es requerido' });
+    }
+    const body: ClienteCreationAttributes = {...request.body, updatedAt: new Date()};
+    const res = await sql`UPDATE clientes SET ${sql(body)} WHERE id = ${id} RETURNING *`;
+    response.status(200).json({message: "Cliente actualizado exitosamente", cliente: res[0]?.id});
+  } catch (e: any) {
+    response
+      .status(500)
+      .json({ error: 'Error al actualizar el cliente', details: e.message });
+  }
+}
+
+async function DELETE(request: Request, response: Response) {
+  try {
+    const id = request.params.id;
+    if (!id) {
+      return response.status(400).json({ error: 'El id del cliente es requerido' });
+    }
+    const res = await sql`UPDATE clientes SET activo = false WHERE id = ${id} RETURNING *`;
+    response.status(200).json({message: "Cliente eliminado exitosamente", cliente: res[0]?.id});
+  } catch (e: any) {
+    response
+      .status(500)
+      .json({ error: 'Error al actualizar el cliente', details: e.message });
+  }
+}
+
+export { CREATE, READ, UPDATE, DELETE };
