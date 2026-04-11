@@ -17,6 +17,8 @@ Dosis.init(
   {
     sequelize,
     modelName: "Dosis",
+    tableName: "dosis",
+    schema: "public",
   },
 );
 export default Dosis;

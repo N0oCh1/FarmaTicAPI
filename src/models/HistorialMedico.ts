@@ -26,6 +26,8 @@ HistorialMedico.init(
   {
     sequelize,
     modelName: "HistorialMedico",
+    tableName: "historiales_medicos",
+    schema: "public",
   },
 );
 export default HistorialMedico;

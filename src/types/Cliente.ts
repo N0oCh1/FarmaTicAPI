@@ -8,6 +8,8 @@ export interface ClienteAttributes {
   asegurado: boolean;
   verificado: boolean;
   sexo: string | null;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface ClienteCreationAttributes {
@@ -20,6 +22,8 @@ export interface ClienteCreationAttributes {
   asegurado?: boolean;
   verificado?: boolean;
   sexo?: string | null;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export type ClienteUpdateAttributes = Partial<Omit<ClienteAttributes, "id">>;

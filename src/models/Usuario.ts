@@ -21,6 +21,8 @@ Usuario.init(
   {
     sequelize,
     modelName: "Usuario",
+    tableName: "usuarios",
+    schema: "public",
   },
 );
 export default Usuario;

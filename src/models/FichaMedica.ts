@@ -17,6 +17,8 @@ FichaMedica.init(
   {
     sequelize,
     modelName: "FichaMedica",
+    tableName: "fichas_medicas",
+    schema: "public",
   },
 );
 export default FichaMedica;

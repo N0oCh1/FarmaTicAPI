@@ -6,10 +6,6 @@ const app = express();
 
 app.use(express.json());
 
-// Authenticate and sync database
-
-
-app.use("/api/v0/", RouteCliente);
-
+app.use("/api/v0", RouteCliente);
 
 export default app;

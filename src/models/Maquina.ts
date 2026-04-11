@@ -18,6 +18,8 @@ Maquina.init(
   {
     sequelize,
     modelName: "Maquina",
+    tableName: "maquinas",
+    schema: "public",
   },
 );
 export default Maquina;

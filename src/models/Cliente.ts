@@ -42,6 +42,8 @@ Cliente.init(
   {
     sequelize,
     modelName: "Cliente",
+    tableName: "clientes",
+    schema: "public",
   },
 );
 

@@ -21,6 +21,8 @@ Receta.init(
   {
     sequelize,
     modelName: "Receta",
+    tableName: "recetas",
+    schema: "public",
   },
 );
 export default Receta;
