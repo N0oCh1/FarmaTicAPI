@@ -1,118 +1,532 @@
 # FarmaTicAPI
 
-A **Node.js / Express** REST API template following the **MVC** pattern with **JWT** authentication.
+Una **API REST** construida con **Node.js**, **Express** y **PostgreSQL**, siguiendo el patrón **MVC** con validación de entrada completa.
 
-## Table of Contents
+## 📋 Tabla de Contenidos
 
-- [Project Structure](#project-structure)
-- [Getting Started](#getting-started)
-- [Environment Variables](#environment-variables)
-- [API Endpoints](#api-endpoints)
-- [Authentication Flow](#authentication-flow)
+- [Requisitos Previos](#requisitos-previos)
+- [Instalación](#instalación)
+- [Variables de Entorno](#variables-de-entorno)
+- [Estructura del Proyecto](#estructura-del-proyecto)
+- [Endpoints](#endpoints)
+  - [Clientes](#clientes)
+  - [Usuarios](#usuarios)
+  - [Fichas Médicas](#fichas-médicas)
+  - [Historiales Médicos](#historiales-médicos)
+  - [Recetas](#recetas)
+  - [Dosis](#dosis)
+  - [Inventario](#inventario)
+  - [Máquinas](#máquinas)
 - [Scripts](#scripts)
 
 ---
 
-## Project Structure
+## 📦 Requisitos Previos
 
-```
-FarmaTicAPI/
-├── src/
-│   ├── config/
-│   │   └── database.js          # DB connection placeholder
-│   ├── controllers/
-│   │   ├── authController.js    # register / login handlers
-│   │   └── userController.js    # protected user handlers
-│   ├── middleware/
-│   │   ├── authMiddleware.js    # JWT validation middleware
-│   │   ├── errorHandler.js      # Centralised error handler
-│   │   └── validate.js          # express-validator helper
-│   ├── models/
-│   │   └── userModel.js         # In-memory user model (replace with ORM)
-│   └── routes/
-│       ├── authRoutes.js        # Public auth routes
-│       ├── userRoutes.js        # Protected user routes
-│       └── index.js             # Route aggregator
-├── tests/
-│   └── api.test.js              # Supertest integration tests
-├── app.js                       # Express app setup
-├── server.js                    # HTTP server entry point
-├── .env.example                 # Environment variable template
-└── package.json
-```
+- **Node.js** >= 18.0.0
+- **npm** >= 9.0.0
+- **PostgreSQL** >= 12.0
+- Git
 
 ---
 
-## Getting Started
+## 🚀 Instalación
+
+### 1. Clonar el repositorio
 
 ```bash
-# 1. Clone the repository
 git clone https://github.com/N0oCh1/FarmaTicAPI.git
 cd FarmaTicAPI
+```
 
-# 2. Install dependencies
+### 2. Instalar dependencias
+
+```bash
 npm install
+```
 
-# 3. Configure environment variables
+### 3. Configurar variables de entorno
+
+```bash
+# Crear archivo .env en la raíz del proyecto
 cp .env.example .env
-# Edit .env and set JWT_SECRET and DB_URI
+```
 
-# 4. Start the development server
+Edita el archivo `.env` con tus credenciales de PostgreSQL (ver [Variables de Entorno](#variables-de-entorno)).
+
+### 4. Inicializar la base de datos
+
+```bash
+# Inicia el servidor (sincronizará automáticamente las tablas)
 npm run dev
 ```
 
----
-
-## Environment Variables
-
-| Variable        | Description                                 | Default       |
-|-----------------|---------------------------------------------|---------------|
-| `PORT`          | HTTP server port                            | `3000`        |
-| `NODE_ENV`      | Environment (`development` / `production`)  | `development` |
-| `JWT_SECRET`    | Secret key used to sign/verify JWTs         | **required**  |
-| `JWT_EXPIRES_IN`| JWT expiry duration (e.g. `1h`, `7d`)       | `1h`          |
-| `DB_URI`        | Database connection string                  | *(optional)*  |
+En los logs deberías ver:
+```
+✓ Database connection authenticated
+✓ Database synchronized on schema: public
+Server running on port 3000
+```
 
 ---
 
-## API Endpoints
+## 🔐 Variables de Entorno
 
-### Public
+Crea un archivo `.env` en la raíz del proyecto con el siguiente contenido:
 
-| Method | Path                      | Description              |
-|--------|---------------------------|--------------------------|
-| `GET`  | `/health`                 | Health check             |
-| `POST` | `/api/v1/auth/register`   | Register a new user      |
-| `POST` | `/api/v1/auth/login`      | Login and receive a JWT  |
+```env
+# Puerto del servidor
+PORT=3000
+NODE_ENV=development
 
-### Protected (Bearer JWT required)
+# Base de datos PostgreSQL
+DB_URL=postgres://usuario:contraseña@localhost:5432/farmatica
 
-| Method | Path                 | Description                    |
-|--------|----------------------|--------------------------------|
-| `GET`  | `/api/v1/users/me`   | Get current user profile       |
-| `GET`  | `/api/v1/users`      | Get all users                  |
+# Autenticación (opcional, para futuras integraciones)
+JWT_SECRET=tu_secreto_seguro
+JWT_EXPIRES_IN=7d
+```
+
+### Detalles de conexión a PostgreSQL
+
+| Variable | Descripción | Ejemplo |
+|----------|-------------|---------|
+| `usuario` | Usuario de PostgreSQL | `postgres` |
+| `contraseña` | Contraseña del usuario | `tu_password` |
+| `localhost` | Host del servidor PostgreSQL | `localhost` o `127.0.0.1` |
+| `5432` | Puerto por defecto de PostgreSQL | `5432` |
+| `farmatica` | Nombre de la base de datos | `farmatica` |
+
+**Formato alternativo:**
+```env
+DB_URL=postgresql://usuario:contraseña@host:puerto/base_datos
+```
 
 ---
 
-## Authentication Flow
+## 📁 Estructura del Proyecto
 
-1. **Register** → `POST /api/v1/auth/register` with `{ name, email, password }`.  
-   The response contains a signed JWT.
-
-2. **Login** → `POST /api/v1/auth/login` with `{ email, password }`.  
-   The response contains a signed JWT.
-
-3. **Protected requests** → Include the JWT in the `Authorization` header:
-   ```
-   Authorization: Bearer <token>
-   ```
+```
+src/
+├── config/
+│   ├── database.ts          # Configuración de conexión a PostgreSQL
+│   └── sequelize.ts         # Configuración de Sequelize ORM
+├── controllers/
+│   ├── CRUD_Cliente.ts      # Controlador de Clientes
+│   ├── CRUD_Usuario.ts      # Controlador de Usuarios
+│   ├── CRUD_FichaMedica.ts  # Controlador de Fichas Médicas
+│   ├── CRUD_HistorialMedico.ts
+│   ├── CRUD_Receta.ts
+│   ├── CRUD_Dosis.ts
+│   ├── CRUD_Inventario.ts
+│   └── CRUD_Maquina.ts
+├── middleware/
+│   ├── validateCliente.ts
+│   ├── validateUsuario.ts
+│   ├── validateFichaMedica.ts
+│   ├── validateHistorialMedico.ts
+│   ├── validateReceta.ts
+│   ├── validateDosis.ts
+│   ├── validateInventario.ts
+│   └── validateMaquina.ts
+├── models/
+│   ├── Cliente.ts
+│   ├── Usuario.ts
+│   ├── FichaMedica.ts
+│   ├── HistorialMedico.ts
+│   ├── Receta.ts
+│   ├── Dosis.ts
+│   ├── Inventario.ts
+│   ├── Maquina.ts
+│   └── index.ts
+├── routes/
+│   ├── Route_Cliente.ts
+│   ├── Route_Usuario.ts
+│   ├── Route_FichaMedica.ts
+│   ├── Route_HistorialMedico.ts
+│   ├── Route_Receta.ts
+│   ├── Route_Dosis.ts
+│   ├── Route_Inventario.ts
+│   └── Route_Maquina.ts
+├── types/
+│   └── ... (interfaces TypeScript para cada modelo)
+├── app.ts                   # Configuración de Express
+└── server.ts                # Punto de entrada
+```
 
 ---
 
-## Scripts
+## 🔌 Endpoints
 
-| Command         | Description                          |
-|-----------------|--------------------------------------|
-| `npm start`     | Start server (`node server.js`)      |
-| `npm run dev`   | Start with nodemon (auto-reload)     |
-| `npm test`      | Run Jest integration tests           |
+### Clientes
+
+#### POST `/api/v0/clientes` - Crear cliente
+
+**Body:**
+```json
+{
+  "nombre": "Juan",
+  "apellido": "Pérez García",
+  "cedula": "12345678901",
+  "correo": "juan.perez@example.com",
+  "password": "MiPassword123",
+  "sexo": "M",
+  "asegurado": true,
+  "verificado": false
+}
+```
+
+**Response (201):**
+```json
+{
+  "id": 1,
+  "nombre": "Juan",
+  "apellido": "Pérez García",
+  "cedula": "12345678901",
+  "correo": "juan.perez@example.com",
+  "password": "MiPassword123",
+  "sexo": "M",
+  "asegurado": true,
+  "verificado": false,
+  "createdAt": "2024-04-11T10:30:00.000Z",
+  "updatedAt": "2024-04-11T10:30:00.000Z"
+}
+```
+
+#### GET `/api/v0/clientes` - Obtener todos los clientes
+
+**Response (200):**
+```json
+[
+  {
+    "id": 1,
+    "nombre": "Juan",
+    "apellido": "Pérez García",
+    ...
+  }
+]
+```
+
+#### GET `/api/v0/clientes/:id` - Obtener cliente por ID
+
+**Response (200):**
+```json
+[
+  {
+    "id": 1,
+    "nombre": "Juan",
+    ...
+  }
+]
+```
+
+#### PUT `/api/v0/clientes/:id` - Actualizar cliente
+
+**Body:** (cualquier campo que desees actualizar)
+```json
+{
+  "nombre": "Juan Carlos",
+  "asegurado": false
+}
+```
+
+**Response (200):** Cliente actualizado
+
+#### DELETE `/api/v0/clientes/:id` - Eliminar cliente
+
+**Response (200):**
+```json
+{
+  "message": "Cliente eliminado",
+  "data": { ... }
+}
+```
+
+---
+
+### Usuarios
+
+#### POST `/api/v0/usuarios` - Crear usuario
+
+**Body:**
+```json
+{
+  "usuario": "jperez_admin",
+  "nombre": "Juan",
+  "apellido": "Pérez",
+  "password": "ContraseñaSegura123",
+  "rol": "admin",
+  "ruc_doctor": "1701234567001",
+  "especialidades": "Cardiología"
+}
+```
+
+**Response (201):** Usuario creado
+
+#### GET `/api/v0/usuarios` - Obtener todos los usuarios
+
+#### GET `/api/v0/usuarios/:id` - Obtener usuario por ID
+
+#### PUT `/api/v0/usuarios/:id` - Actualizar usuario
+
+#### DELETE `/api/v0/usuarios/:id` - Eliminar usuario
+
+---
+
+### Fichas Médicas
+
+#### POST `/api/v0/fichas-medicas` - Crear ficha médica
+
+**Body:**
+```json
+{
+  "id_cliente": 1,
+  "tipo_sanguineo": "O+",
+  "alergenos": "Penicilina, Paracetamol",
+  "enfermedad_cronica": "Diabetes tipo 2"
+}
+```
+
+**Response (201):** Ficha médica creada
+
+#### GET `/api/v0/fichas-medicas` - Obtener todas las fichas
+
+#### GET `/api/v0/fichas-medicas/:id` - Obtener ficha por ID
+
+#### PUT `/api/v0/fichas-medicas/:id` - Actualizar ficha
+
+#### DELETE `/api/v0/fichas-medicas/:id` - Eliminar ficha
+
+---
+
+### Historiales Médicos
+
+#### POST `/api/v0/historiales-medicos` - Crear historial
+
+**Body:**
+```json
+{
+  "id_cliente": 1,
+  "fecha_consulta": "2024-04-11T10:30:00Z",
+  "motivo_consulta": "Control de presión arterial",
+  "diagnostico": "Hipertensión leve",
+  "tratamiento": "Medicación y dieta",
+  "observaciones": "Paciente en buen estado general",
+  "presion_arterial": "140/90",
+  "temperatura": 36.5,
+  "peso": 75.5,
+  "altura": 1.75,
+  "frecuencia_cardiaca": 72,
+  "medico": "Dr. Carlos López",
+  "fecha_registro": "2024-04-11T10:30:00Z"
+}
+```
+
+**Response (201):** Historial creado
+
+#### GET `/api/v0/historiales-medicos` - Obtener todos
+
+#### GET `/api/v0/historiales-medicos/:id` - Obtener por ID
+
+#### PUT `/api/v0/historiales-medicos/:id` - Actualizar
+
+#### DELETE `/api/v0/historiales-medicos/:id` - Eliminar
+
+---
+
+### Recetas
+
+#### POST `/api/v0/recetas` - Crear receta
+
+**Body:**
+```json
+{
+  "id_cliente": 1,
+  "doctor_remitente": "Dr. López",
+  "ruc_doctor_remitente": "1701234567001",
+  "hospital_remitente": "Hospital Central",
+  "telefono_hospital": "+593-2-1234567",
+  "correo": "hospital@example.com",
+  "codigo": 12345,
+  "fecha": "2024-04-11T10:30:00Z"
+}
+```
+
+**Response (201):** Receta creada
+
+#### GET `/api/v0/recetas` - Obtener todas
+
+#### GET `/api/v0/recetas/:id` - Obtener por ID
+
+#### PUT `/api/v0/recetas/:id` - Actualizar
+
+#### DELETE `/api/v0/recetas/:id` - Eliminar
+
+---
+
+### Dosis
+
+#### POST `/api/v0/dosis` - Crear dosis
+
+**Body:**
+```json
+{
+  "id_receta": 1,
+  "id_medicamento": 5,
+  "cantidad": 30,
+  "instrucciones": "Tomar 1 comprimido cada 8 horas después de las comidas"
+}
+```
+
+**Response (201):** Dosis creada
+
+#### GET `/api/v0/dosis` - Obtener todas
+
+#### GET `/api/v0/dosis/:id` - Obtener por ID
+
+#### PUT `/api/v0/dosis/:id` - Actualizar
+
+#### DELETE `/api/v0/dosis/:id` - Eliminar
+
+---
+
+### Inventario
+
+#### POST `/api/v0/inventario` - Crear registro
+
+**Body:**
+```json
+{
+  "id_maquina": 1,
+  "nombre_medicamento": "Amoxicilina",
+  "marca": "Amoxor",
+  "precio": 15.50,
+  "cantidad": 100,
+  "resetado": false
+}
+```
+
+**Response (201):** Registro creado
+
+#### GET `/api/v0/inventario` - Obtener todos
+
+#### GET `/api/v0/inventario/:id` - Obtener por ID
+
+#### PUT `/api/v0/inventario/:id` - Actualizar
+
+#### DELETE `/api/v0/inventario/:id` - Eliminar
+
+---
+
+### Máquinas
+
+#### POST `/api/v0/maquinas` - Crear máquina
+
+**Body:**
+```json
+{
+  "ubicacion": "Farmacia Centro, Calle Principal 123",
+  "activo": true,
+  "latitud": -0.2184,
+  "longitud": -78.5158
+}
+```
+
+**Response (201):** Máquina creada
+
+#### GET `/api/v0/maquinas` - Obtener todas
+
+#### GET `/api/v0/maquinas/:id` - Obtener por ID
+
+#### PUT `/api/v0/maquinas/:id` - Actualizar
+
+#### DELETE `/api/v0/maquinas/:id` - Eliminar
+
+---
+
+## ✅ Validaciones
+
+Todos los endpoints POST y PUT incluyen validación automática:
+
+- **Campos requeridos:** Se validan según el modelo
+- **Formatos:** Email, fechas, números, etc.
+- **Longitudes:** Min/max de caracteres
+- **Enumeraciones:** Valores permitidos (ej: rol, sexo, tipo de sangre)
+
+**Respuesta de Error (400):**
+```json
+{
+  "error": "Errores de validación",
+  "details": [
+    {
+      "field": "correo",
+      "message": "El correo debe ser un email válido"
+    }
+  ]
+}
+```
+
+---
+
+## 🎯 Scripts
+
+| Comando | Descripción |
+|---------|-------------|
+| `npm run dev` | Inicia el servidor en desarrollo (con auto-reload) |
+| `npm run build` | Compila TypeScript a JavaScript |
+| `npm start` | Inicia el servidor compilado |
+| `npm test` | Ejecuta los tests |
+| `npm run lint` | Valida el código con ESLint |
+| `npm run prettier` | Formatea el código con Prettier |
+| `npm run types` | Verifica tipos de TypeScript |
+
+---
+
+## 🐛 Resolución de Problemas
+
+### PostgreSQL no está corriendo
+
+```powershell
+# Windows - iniciar el servicio PostgreSQL
+net start PostgreSQL15
+```
+
+### Error: "relation 'clientes' does not exist"
+
+La base de datos se sincroniza automáticamente al iniciar. Si ves este error:
+
+1. Limpia las tablas:
+```sql
+DROP TABLE IF EXISTS clientes CASCADE;
+DROP TABLE IF EXISTS usuarios CASCADE;
+-- ... etc
+```
+
+2. Reinicia el servidor:
+```bash
+npm run build
+npm run dev
+```
+
+### Error de conexión a BD
+
+Verifica tu `.env`:
+```env
+# Formato correcto
+DB_URL=postgres://usuario:contraseña@localhost:5432/farmatica
+```
+
+---
+
+## 📝 Notas
+
+- Todos los timestamps incluyen `createdAt` y `updatedAt` automáticamente
+- Los IDs son auto-incrementales de tipo BIGINT
+- Las respuestas de error incluyen detalles para debugging
+- El schema utilizado es `public`
+
+---
+
+**Versión:** 1.0.0  
+**Última actualización:** 2024-04-11
+

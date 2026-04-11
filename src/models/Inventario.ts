@@ -19,6 +19,8 @@ Inventario.init(
   {
     sequelize,
     modelName: "Inventario",
+    tableName: "inventario",
+    schema: "public",
   },
 );
 export default Inventario;
